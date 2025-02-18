@@ -19,21 +19,35 @@
         <title>{% block extra_title %}{% endblock %}Dublin Bikes</title>
     </head>
     <body>
-        <header>
-            <nav>
-                <h1>test</h1>
-            </nav>
-        </header>
-        <main>
-            <div>
-                <!-- Content -->
-            </div>
-            <div>
-                <!-- Map -->
-            </div>
-        </main>
+        <div class="content">
+            <header>
+                <nav>
+                    <!-- Navigation -->
+                </nav>
+            </header>
+            <main>
+                <div>
+                    <!-- Content -->
+                </div>
+                <div>
+                    <!-- Map -->
+                </div>
+            </main>
+        </div>
         <footer>
-            <!-- Footer -->
+            <div class="footer-container">
+                <ul class="social-links">
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">YouTube</a></li>
+                    <li><a href="#">TikTok</a></li>
+                </ul>
+                <ul class="other-links">
+                    <li><a href="#">Map</a></li>
+                    <li><a href="#">Subscription</a></li>
+                    <li><a href="#">Instructions</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                </ul>
+            </div>
         </footer>
 
         {% block customjs %}
