@@ -80,19 +80,19 @@ html, body {
     color: #fff;
 }
 
-.hero-content {
+.l-pad {
     padding-left: 200px;
 }
 
-.hero-content h2 {
+.img-title {
     font-size: 5rem;
 }
 
-.hero-content i {
+.icon-title {
     font-size: 2rem;
 }
 
-.hero-content a {
+.link-title-style {
     color: #fff;
 }
 
@@ -142,6 +142,30 @@ html, body {
 
 .instructions-subtitle span {
     color: rgb(216, 177, 46);
+}
+
+/* Our Story Section */
+
+.story-container {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    text-align: left;
+    border-radius: 5px;
+    height: 95vh; 
+    background: url(/static/images/story-image.webp) no-repeat center center/cover;
+    margin: 0.5rem;
+    color: #fff;
+}
+
+.story-content a:hover {
+    text-decoration: none;
+    color: #fff;
+}
+
+.story-content span {
+    position: relative;
+    top: -7px;
 }
 
 /* Footer */
