@@ -13,6 +13,10 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         {% endblock %}
 
+        <!-- Google Icons -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"/>
+
+
         <!-- Favicon -->
         <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='favicon/favicon.png') }}">
     
@@ -50,12 +54,47 @@
                 </section>
                 <section>
                     <div>
-                        <!-- Instructions -->
+                        <!-- Map -->
                     </div>
                 </section>
                 <section>
-                    <div>
-                        <!-- Map -->
+                    <div class="instructions-container">
+                        <div class="station-image">
+                            <img src="/static/images/bike-station.webp">
+                        </div>
+                        <div class="instructions-content">
+                            <h2>How to ride a Dublin Bike</h2>
+                            <div class="instructions-subtitle">
+                                <span class="material-symbols-outlined">
+                                    looks_one
+                                </span>
+                                <h3>Find a ride</h3>
+                            </div>
+                            <p>Find a bike in one of the stations or locate one using the map in your app.</p>
+                            <div class="instructions-subtitle">
+                                <span class="material-symbols-outlined">
+                                    looks_two
+                                </span>
+                                <h3>Unlock with the app</h3>
+                            </div>
+                            <p>Use the Dublin Bikes app to unlock the bike and start your ride!</p>
+                            <div class="instructions-subtitle">
+                                <span class="material-symbols-outlined">
+                                    looks_3
+                                </span>
+                                <h3>Follow safety rules</h3>
+                            </div>
+                            <p>Follow the traffic rules. Use bike lanes and wear a helmet to stay safe when riding.</p>
+                            <div>
+                                <div class="instructions-subtitle">
+                                    <span class="material-symbols-outlined">
+                                        looks_4
+                                    </span>
+                                    <h3>Park with care</h3>
+                                </div>
+                            </div>
+                            <p>Park your e-scooter in one of the designated stations across town.</p>
+                        </div>
                     </div>
                 </section>
             </main>
