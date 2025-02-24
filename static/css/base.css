@@ -66,8 +66,48 @@ html, body {
     outline: none;
 }
 
+/* Hero Image */
+
+.hero-container {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    text-align: left;
+    border-radius: 5px;
+    height: 95vh; 
+    background: url(/static/images/hero-image.webp) no-repeat center center/cover;
+    margin: 0.5rem;
+    color: #fff;
+}
+
+.hero-content {
+    padding-left: 200px;
+}
+
+.hero-content h2 {
+    font-size: 5rem;
+}
+
+.hero-content i {
+    font-size: 2rem;
+}
+
+.hero-content a {
+    color: #fff;
+}
+
+.hero-content a:hover {
+    text-decoration: none;
+    color: #fff;
+}
+
+.hero-content span {
+    position: relative;
+    top: -7px;
+}
 
 /* Footer */
+
 .footer-container {
     display: flex;
     justify-content: space-between;
