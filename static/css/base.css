@@ -12,6 +12,11 @@ html, body {
     background-color: #F7F7F7;
 }
 
+
+html {
+    scrollbar-width: thin;
+}
+
 /* Navigation Bar */
 
 .nav-bar {
