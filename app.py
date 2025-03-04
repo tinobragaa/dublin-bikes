@@ -1,17 +1,18 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask
+from routes import main
+import os
 
-app = Flask(__name__)
+def create_app():
+    app = Flask(__name__)
+    app.config.from_mapping(
+        SECRET_KEY=os.environ.get('SECRET_KEY') or 'dev_key'
+    )
+    
+    # Register blueprint
+    app.register_blueprint(main)
+    
+    return app
 
-
-@app.route('/')
-def index():
-    return redirect(url_for('home'))
-
-
-@app.route('/home')
-def home():
-    return render_template('index.html')
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app = create_app()
+    app.run(host='0.0.0.0', port=5000, debug=True)
