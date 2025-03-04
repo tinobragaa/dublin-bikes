@@ -7,14 +7,13 @@ html, body {
     flex-direction: column;
 }
 
+html {
+    scrollbar-width: thin;
+}
+
 .content {
     flex: 1;
     background-color: #F7F7F7;
-}
-
-
-html {
-    scrollbar-width: thin;
 }
 
 /* Navigation Bar */
@@ -59,6 +58,11 @@ html {
 
 .icon-container {
     margin: 0 30px;
+}
+
+.icon-container span a {
+    text-decoration: none;
+    color: #fff;
 }
 
 .nav-button {
