@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Find nearby bikes to rent and check real-time availability">
+        <meta name="keywords" content="bike rental, dublin bikes, cycling">
+        <meta name="author" content="Valentino Braga, Sirui Wei and Charan Singu.">
+    
+        <!-- CSS -->
+        {% block corecss %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+        {% endblock %}
+
+        <!-- Icons -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
+
+        <!-- Google Maps API -->
+        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsSyZkzO5PWsNCl8VN8tceGZPgSb8R_4s&callback=initMap" async defer></script>
+
+        <!-- Favicon -->
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon/favicon.png') }}">
+    
+        <title>{% block extra_title %}{% endblock %}Dublin Bikes</title>
+    </head>
+    <body>
+        <div class="content">
+            <header>
+                <nav class="nav-bar">
+                    <div class="icon-container">
+                        <button aria-label="Open navigation menu" class="nav-button">
+                            <i class="fa-solid fa-grip-lines fa-lg nav-icon"></i>
+                        </button>
+                    </div>
+                    <h1><a href="{{ url_for('main.home') }}">Dublin Bikes</a></h1>
+                    <div class="nav-right-container">
+                        <div class="auth-links">
+                            {% if current_user.is_authenticated %}
+                                <a href="{{ url_for('auth.logout') }}" class="nav-auth-link">
+                                    <span class="material-symbols-outlined">logout</span>
+                                    Logout
+                                </a>
+                            {% else %}
+                                <a href="{{ url_for('auth.signin') }}" class="nav-auth-link">
+                                    <span class="material-symbols-outlined">login</span>
+                                    Sign In
+                                </a>
+                                <a href="{{ url_for('auth.signup') }}" class="nav-auth-link">
+                                    <span class="material-symbols-outlined">person_add</span>
+                                    Sign Up
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </nav>
+            </header>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert">
+                                <span>&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <main>
+                <section class="back-color">
+                    <div class="hero-container">
+                        <div class="l-pad hero-content">
+                            <h2 class="img-title">Safe.</h2>
+                            <h2 class="img-title">Smart.</h2>
+                            <h2 class="img-title">Affordable.</h2>
+                            <p>Use Dublin Bikes for your daily commute and to explore the city.</p>
+                            <a href="#map-section" class="link-title-style">
+                                <div>
+                                    <i class="fa-solid fa-square-arrow-up-right icon-title"></i>
+                                    <span>Explore</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="map-section">
+                    <div id="map" style="height: 600px; width: 100%; margin: 2rem auto;"></div>
+                </section>
+
+                <section>
+                    <div class="instructions-container">
+                        <div class="station-image">
+                            <img src="{{ url_for('static', filename='images/bike-station.webp') }}" 
+                                 alt="Bike Station" 
+                                 class="img-fluid">
+                        </div>
+                        <div class="instructions-content">
+                            
+                            <h2>How to ride a Dublin Bike</h2>
+                            <div class="instructions-subtitle">
+                                <span class="material-symbols-outlined">looks_one</span>
+                                <h3>Find a ride</h3>
+                            </div>
+                            <p>Find a bike in one of the stations or locate one using the map in your app.</p>
+                            <div class="instructions-subtitle">
+                                <span class="material-symbols-outlined">looks_two</span>
+                                <h3>Unlock with the app</h3>
+                            </div>
+                            <p>Use the Dublin Bikes app to unlock the bike and start your ride!</p>
+                            <div class="instructions-subtitle">
+                                <span class="material-symbols-outlined">looks_3</span>
+                                <h3>Follow safety rules</h3>
+                            </div>
+                            <p>Follow traffic rules. Use bike lanes and wear a helmet to stay safe.</p>
+                            <div class="instructions-subtitle">
+                                <span class="material-symbols-outlined">looks_4</span>
+                                <h3>Park with care</h3>
+                            </div>
+                            <p>Park your bike in designated stations across town.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <div class="story-container">
+                        <div class="l-pad story-content">
+                            <h2 class="img-title">Live for the moment</h2>
+                            <p>We're reimagining every ride for the future of moving.</p>
+                            <a href="#" class="link-title-style">
+                                <div>
+                                    <i class="fa-solid fa-square-arrow-up-right icon-title"></i>
+                                    <span>Our Story</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <footer>
+            <div class="footer-container">
+                <ul class="social-links">
+                    <li><a href="https://instagram.com" target="_blank" rel="noopener">Instagram</a></li>
+                    <li><a href="https://youtube.com" target="_blank" rel="noopener">YouTube</a></li>
+                    <li><a href="https://tiktok.com" target="_blank" rel="noopener">TikTok</a></li>
+                </ul>
+                <ul class="other-links">
+                    <li><a href="#map-section">Map</a></li>
+                    <li><a href="#">Instructions</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                </ul>
+            </div>
+        </footer>
+
+        {% block customjs %}
+        <!-- JS -->
+        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+        <!-- Font Awesome -->
+        <script src="https://kit.fontawesome.com/6131d31248.js" crossorigin="anonymous"></script>
+        
+        <!-- Map Script -->
+        <script>
+            let map;
+            function initMap() {
+                map = new google.maps.Map(document.getElementById('map'), {
+                    center: { lat: 53.3498, lng: -6.2603 },
+                    zoom: 14
+                });
+            }
+        </script>
+        {% endblock %}
+    </body>
+</html>
