@@ -32,7 +32,7 @@
                           <i class="fa-solid fa-grip-lines fa-lg nav-icon"></i>
                         </button>
                       </div>
-                      <h1><a href="/">Dublin Bikes</a></h1>
+                      <h1 class="logo"><a href="/">Dublin Bikes</a></h1>
                       <div class="icon-container right">
                         <button aria-label="Open login menu" class="nav-button" id="login-icon">
                           <i class="fa-solid fa-user fa-lg nav-icon"></i>
@@ -41,6 +41,7 @@
                     </div>
                     <div class="nav-links-container" id="nav-links">
                       <div class="links-set" id="hamburger-links">
+                        <hr class="divider">
                         {% if current_user.is_authenticated %}
                         <a href="#map-section">Maps</a>
                         <a href="#instruction-section">Instructions</a>
@@ -51,6 +52,7 @@
                         {% endif %}
                       </div>
                       <div class="links-set" id="login-links">
+                        <hr class="divider">
                         {% if current_user.is_authenticated %}
                             <a href="{{ url_for('auth.logout') }}" class="nav-auth-link">Logout</a>
                         {% else %}
