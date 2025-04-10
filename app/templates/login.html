@@ -1,94 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sign In - Dublin Bikes</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"/>
-  <style>
-    body {
-      height: 100vh;
-      margin: 0;
-      display: flex;
-      font-family: Arial, sans-serif;
-    }
-    .container {
-      display: flex;
-      flex: 1;
-    }
-    .left {
-      flex: 1;
-      background: url('/static/images/login.jpg') no-repeat center center/cover;
-      background-size: cover;
-    }
-    .right {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: white;
-      padding: 2rem;
-    }
-    .form-box {
-      width: 100%;
-      max-width: 400px;
-    }
-    .logo {
-      width: 300px;
-      margin: 0 auto 20px;
-      display: block;
-    }
-    h2 {
-      text-align: center;
-      font-size: 2rem;
-      margin-bottom: 20px;
-    }
-    .form-control {
-      font-size: 1.1rem;
-      padding: 10px;
-      margin-bottom: 15px;
-    }
-    .btn {
-      width: 100%;
-      font-size: 1.2rem;
-    }
-    .alert {
-      font-size: 1rem;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <!-- Left Section with Image -->
-    <div class="left"></div>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Login to your account. Dublin Bikes.">
+    <meta name="keywords" content="Login page, sign in, dublin bikes">
+    <meta name="author" content="Valentino Braga and Charan Singu.">
+  
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
+  
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon/favicon.png') }}">
+  
+    <title>{% block extra_title %}Sign In{% endblock %} | Dublin Bikes</title>
+  </head>
+  <body>
+      <header>
+        <nav class="nav-bar">
+          <div class="top-content">
+            <div class="icon-container left">
+              <button aria-label="Open navigation menu" class="nav-button" id="hamburger-menu">
+                <i class="fa-solid fa-grip-lines fa-lg nav-icon"></i>
+              </button>
+            </div>
+            <h1><a href="/">Dublin Bikes</a></h1>
+            <div class="icon-container right">
+              <button aria-label="Open login menu" class="nav-button" id="login-icon">
+                <i class="fa-solid fa-user fa-lg nav-icon"></i>
+              </button>
+            </div>
+          </div>
+          <div class="nav-links-container" id="nav-links">
+            <div class="links-set" id="hamburger-links">
+              <a href="/">Home</a>
+            </div>
+            <div class="links-set" id="login-links">
+              {% if current_user.is_authenticated %}
+                  <a href="{{ url_for('auth.logout') }}" class="nav-auth-link">Logout</a>
+              {% else %}
+                  <a href="{{ url_for('auth.login') }}" class="nav-auth-link">Login</a>
+                  <a href="{{ url_for('auth.signup') }}" class="nav-auth-link">Sign Up</a>
+              {% endif %}
+            </div>
+          </div>
+        </nav>
+      </header>
 
-    <!-- Right Section with Sign In Form -->
-    <div class="right">
-      <div class="form-box">
-        <!-- Logo Image -->
-        <img src="/static/images/logo.png" alt="Logo" class="logo"/>
-        <h2>Sign In</h2>
-
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="alert alert-{{ category }}">{{ message }}</div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
-
-        <!-- Sign In Form -->
-        <form method="POST">
-          {{ form.hidden_tag() }}
-          {{ form.email(class="form-control", placeholder="Email") }}
-          {{ form.password(class="form-control", placeholder="Password") }}
-          {{ form.submit(class="btn btn-danger mt-3") }}
-        </form>
-
-        <p class="text-center mt-3">Don't have an account? <a href="{{ url_for('auth.signup') }}">Sign Up</a></p>
+      <div class="content" style="background-color: #000;">
+        <main>
+          <div class="container form-space">
+            <div class="row justify-content-center">
+              <div class="col-md-6">
+                <div>
+                  <div>
+                    <h4 class="mt-3 text-center" style="color: #fff; font-family: Major Mono Display, serif;">SIGN IN</h4>
+                  </div>
+                  <div class="card-body">
+                    <!-- Flash Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                      {% if messages %}
+                        {% for category, message in messages %}
+                          <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                      {% endif %}
+                    {% endwith %}
+      
+                    <!-- Sign In Form -->
+                    <form method="POST">
+                      {{ form.hidden_tag() }}
+                      <div class="form-group">
+                        {{ form.email(class="form-control", placeholder="Enter your email", id="loginEmail") }}
+                      </div>
+                      <div class="form-group">
+                        {{ form.password(class="form-control", placeholder="Enter your PIN", id="loginPassword") }}
+                      </div>
+                      <button type="submit" class="btn btn-primary btn-block mt-3">{{ form.submit.label.text }}</button>
+                    </form>
+                    <div class="mt-3 text-center">
+                      <p style="color: #fff;">New here? <a href="{{ url_for('auth.signup') }}" data-toggle="modal" data-target="#signupModal">Create an account</a></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
       </div>
-    </div>
-  </div>
-</body>
+      
+
+
+      <footer style="background-color: #000;">
+        <div class="footer-title">
+          <p>
+            <a href="/" style="color: #fff;">Dublin Bikes</a>
+          </p>
+        </div>
+      </footer>
+
+    <!-- Font Awesome -->
+    <script src="https://kit.fontawesome.com/6131d31248.js" crossorigin="anonymous"></script>
+    <!-- JS -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+  </body>
 </html>

@@ -283,6 +283,19 @@ html {
 }
 
 /* Sign In and Sign Up */
+
 .form-space {
     margin-top: 150px;
+}
+
+.btn-primary {
+    background-color: white !important;
+    color: black !important;
+    border: 1px solid white !important;
+  }
+
+.btn-primary:hover {
+    background-color: black !important;
+    color: white !important;
+    border: 1px solid white !important;
 }
