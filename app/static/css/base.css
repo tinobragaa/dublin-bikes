@@ -106,9 +106,14 @@ html {
     color: #fff;
 }
 
-.hero-content a:hover {
+.hero-content a {
     text-decoration: none;
     color: #fff;
+}
+
+.hero-content a:hover {
+    color: #dcdcdc;
+    text-decoration: none;
 }
 
 .hero-content span {
@@ -164,13 +169,13 @@ html {
     border-radius: 5px;
     height: 95vh; 
     background: url(/static/images/story-image.webp) no-repeat center center/cover;
-    margin: 0.5rem;
+    margin: 0.5rem 0.5rem 5rem;
     color: #fff;
 }
 
 .story-content a:hover {
     text-decoration: none;
-    color: #fff;
+    color: #dcdcdc;
 }
 
 .story-content span {
@@ -211,6 +216,7 @@ html {
 }
 
 .footer-title {
+    margin-top: 1rem;
     text-align: center;
     font-size: 5rem;
 }
