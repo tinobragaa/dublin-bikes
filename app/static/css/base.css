@@ -151,7 +151,7 @@ html {
 }
 
 .hero-content a:hover {
-    color: #dcdcdc;
+    color: #FEF506;
     text-decoration: none;
 }
 
@@ -198,7 +198,7 @@ html {
     color: rgb(216, 177, 46);
 }
 
-/* Our Story Section */
+/* Story Section */
 
 .story-container {
     display: flex;
@@ -214,7 +214,7 @@ html {
 
 .story-content a:hover {
     text-decoration: none;
-    color: #dcdcdc;
+    color: #FEF506;
 }
 
 .story-content span {
@@ -303,4 +303,24 @@ html {
     background-color: black !important;
     color: white !important;
     border: 1px solid white !important;
+}
+
+.create-link p a {
+    text-decoration: none;
+}
+
+
+.create-link p a:hover {
+    color: #FEF506;
+    font-style: italic;
+}
+
+/* Font Colors */
+
+.wt-font{
+    color: #fff;
+}
+
+.ylw-font{
+    color: #FEF506;
 }
