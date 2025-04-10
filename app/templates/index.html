@@ -41,9 +41,14 @@
                     </div>
                     <div class="nav-links-container" id="nav-links">
                       <div class="links-set" id="hamburger-links">
+                        {% if current_user.is_authenticated %}
                         <a href="#map-section">Maps</a>
                         <a href="#instruction-section">Instructions</a>
-                        <a href="#story-section">Our Story</a>
+                        {% else %}
+                            <a href="#map-section">Maps</a>
+                            <a href="#instruction-section">Instructions</a>
+                            <a href="{{ url_for('auth.signup') }}">Join</a>
+                        {% endif %}
                       </div>
                       <div class="links-set" id="login-links">
                         {% if current_user.is_authenticated %}
@@ -56,7 +61,6 @@
                     </div>
                   </nav>
             </header>
-
             <!-- Flash Messages -->
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -70,7 +74,6 @@
                     {% endfor %}
                 {% endif %}
             {% endwith %}
-
             <main>
                 <section class="back-color">
                     <div class="hero-container">
@@ -88,11 +91,9 @@
                         </div>
                     </div>
                 </section>
-
                 <section id="map-section" style="margin: 0 0.5rem;">
                     <div id="map" style="height: 600px; width: 100%; margin: 0.5rem auto; border-radius: 5px;"></div>
                 </section>
-
                 <section id="instruction-section">
                     <div class="instructions-container">
                         <div class="station-image">
@@ -125,16 +126,15 @@
                         </div>
                     </div>
                 </section>
-
                 <section id="story-section">
                     <div class="story-container">
                         <div class="l-pad story-content">
                             <h2 class="img-title">Live for the moment</h2>
                             <p>We're reimagining every ride for the future of moving.</p>
-                            <a href="#" class="link-title-style">
+                            <a href="{{ url_for('auth.signup') }}" class="link-title-style">
                                 <div>
                                     <i class="fa-solid fa-square-arrow-up-right icon-title"></i>
-                                    <span>Our Story</span>
+                                    <span>Create your account</span>
                                 </div>
                             </a>
                         </div>
@@ -142,7 +142,6 @@
                 </section>
             </main>
         </div>
-
         <footer>
             <div class="footer-title">
                 <p><a href="/">Dublin Bikes</a></p>
@@ -157,7 +156,7 @@
                 <ul class="other-links">
                     <li><a href="#map-section">Map</a></li>
                     <li><a href="#instruction-section">Instructions</a></li>
-                    <li><a href="#story-section">Our Story</a></li>
+                    <li><a href="{{ url_for('auth.signup') }}">Join</a></li>
                 </ul>
             </div>
         </footer>
