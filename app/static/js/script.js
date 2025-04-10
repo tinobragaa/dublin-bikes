@@ -5,6 +5,7 @@ const navBar = document.querySelector('.nav-bar');
 const navLinks = document.getElementById('nav-links');
 const hamburgerLinks = document.getElementById('hamburger-links');
 const loginLinks = document.getElementById('login-links');
+const allLinks = document.querySelectorAll('.nav-links-container a');
 
 // This variable tracks which menu is currently open.
 let currentMenu = null;
@@ -58,4 +59,11 @@ hamburgerMenu.addEventListener('click', () => {
 
 loginIcon.addEventListener('click', () => {
   toggleMenu("login");
+});
+
+// Close the nav when linked is clicke.
+allLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        closeMenu();
+    });
 });
