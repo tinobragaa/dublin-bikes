@@ -27,24 +27,56 @@
     <body>
         <div class="content">
             <header>
-                <nav class="nav-bar">
+                <!-- <nav class="nav-bar">
                     <div class="icon-container">
                         <button aria-label="Open navigation menu." class="nav-button"><i class="fa-solid fa-grip-lines fa-lg nav-icon"></i></button>
                     </div>
                     <h1><a href="/">Dublin Bikes</a></h1>
                     <div class="icon-container">
                         {% if current_user.is_authenticated %}
-                            <!-- Show Logout button if the user is authenticated -->
                             <a href="{{ url_for('auth.logout') }}" class="nav-auth-link">Logout</a>
                         {% else %}
-                            <!-- Show Sign In and Sign Up buttons if the user is not authenticated -->
                             <a href="{{ url_for('auth.login') }}" class="nav-auth-link">Sign In</a>
                             <a href="{{ url_for('auth.signup') }}" class="nav-auth-link">Sign Up</a>
                         {% endif %}
                     </div>
-                </nav>
+                </nav> -->
+                <nav class="nav-bar">
+                    <!-- Top row that always stays visible -->
+                    <div class="top-content">
+                      <div class="icon-container left">
+                        <button aria-label="Open navigation menu" class="nav-button" id="hamburger-menu">
+                          <i class="fa-solid fa-grip-lines fa-lg nav-icon"></i>
+                        </button>
+                      </div>
+                      <h1><a href="/">Dublin Bikes</a></h1>
+                      <div class="icon-container right">
+                        <button aria-label="Open login menu" class="nav-button" id="login-icon">
+                          <i class="fa-solid fa-user fa-lg nav-icon"></i>
+                        </button>
+                      </div>
+                    </div>
+                    <!-- Expandable links container (initially hidden) -->
+                    <div class="nav-links-container" id="nav-links">
+                      <!-- Links for hamburger menu -->
+                      <div class="links-set" id="hamburger-links">
+                        <a href="#map-section">Maps</a>
+                        <a href="#instruction-section">Instructions</a>
+                        <a href="#story-section">Our Story</a>
+                      </div>
+                      <!-- Links for login menu -->
+                      <div class="links-set" id="login-links">
+                        {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('auth.logout') }}" class="nav-auth-link">Logout</a>
+                        {% else %}
+                            <a href="{{ url_for('auth.login') }}" class="nav-auth-link">Login</a>
+                            <a href="{{ url_for('auth.signup') }}" class="nav-auth-link">Sign Up</a>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </nav>
             </header>
-            
+
             <!-- Flash Messages -->
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
