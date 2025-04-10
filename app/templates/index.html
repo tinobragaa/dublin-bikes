@@ -81,7 +81,7 @@
                     <div id="map" style="height: 600px; width: 100%; margin: 0.5rem auto; border-radius: 5px;"></div>
                 </section>
 
-                <section>
+                <section id="instruction-section">
                     <div class="instructions-container">
                         <div class="station-image">
                             <img src="{{ url_for('static', filename='images/bike-station.webp') }}" 
@@ -114,7 +114,7 @@
                     </div>
                 </section>
 
-                <section>
+                <section id="story-section">
                     <div class="story-container">
                         <div class="l-pad story-content">
                             <h2 class="img-title">Live for the moment</h2>
@@ -140,8 +140,8 @@
                 </ul>
                 <ul class="other-links">
                     <li><a href="#map-section">Map</a></li>
-                    <li><a href="#">Instructions</a></li>
-                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="#instruction-section">Instructions</a></li>
+                    <li><a href="#story-section">Our Story</a></li>
                 </ul>
             </div>
         </footer>
@@ -213,9 +213,7 @@
                 infoWindow.open(map, marker);  // Use the 'marker' that was clicked
             }
         </script>
-             
-        
-
+            
         {% endblock %}
     </body>
 </html>
