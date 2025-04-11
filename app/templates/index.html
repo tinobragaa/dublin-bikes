@@ -14,9 +14,11 @@
         <!-- Icons -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
 
-        <!-- Google Maps API -->
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsSyZkzO5PWsNCl8VN8tceGZPgSb8R_4s&callback=initMap" async defer></script>
+        <!-- Leaflet CSS -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
+<!-- Leaflet JS -->
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
         <!-- Favicon -->
         <link rel="shortcut icon" href="{{ url_for('static', filename='favicon/favicon.png') }}">
     
@@ -94,6 +96,30 @@
                     </div>
                 </section>
                 <section id="map-section" style="margin: 1rem;">
+                    <div class="map-controls" style="max-width: 400px; margin-bottom: 1rem;">
+                        <input 
+                            type="text" 
+                            id="search-input" 
+                            placeholder="Search station by name..."
+                            style="padding: 0.5rem; width: 100%; margin-bottom: 0.5rem;">
+                        
+                        <label for="bike-filter">Min. bikes: <span id="bike-count-display">0</span></label>
+                        <input 
+                            type="range" 
+                            id="bike-filter" 
+                            min="0" 
+                            max="20" 
+                            value="0" 
+                            style="width: 100%;">
+                    </div>
+                    <div id="map" style="
+                        height: 600px; 
+                        width: 100%; 
+                        overflow: hidden;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                    </div>
+                </section>
+                
                     <div id="map" style="
                         height: 600px; 
                         width: 100%; 
@@ -173,80 +199,36 @@
         <script src="{{ url_for('static', filename='js/script.js') }}"></script>
         <!-- Font Awesome -->
         <script src="https://kit.fontawesome.com/6131d31248.js" crossorigin="anonymous"></script>
-
-        <!-- Map Script -->
         <script>
-            let map;
+            const apiKey = 'c68dab54bda9ba1de22a1c7fc5d29ed1537e33ca'; // Replace with your real JCDecaux API key
         
-            // Random bike station data
-            const stations = [
-                { id: 1, name: "Station 1", lat: 53.3498, lng: -6.2603, bikesAvailable: Math.floor(Math.random() * 20) },
-                { id: 2, name: "Station 2", lat: 53.3508, lng: -6.2613, bikesAvailable: Math.floor(Math.random() * 20) },
-                { id: 3, name: "Station 3", lat: 53.3518, lng: -6.2623, bikesAvailable: Math.floor(Math.random() * 20) },
-                { id: 4, name: "Station 4", lat: 53.3528, lng: -6.2633, bikesAvailable: Math.floor(Math.random() * 20) },
-                { id: 5, name: "Station 5", lat: 53.3538, lng: -6.2643, bikesAvailable: Math.floor(Math.random() * 20) },
-                { id: 6, name: "Station 6", lat: 53.3548, lng: -6.2653, bikesAvailable: Math.floor(Math.random() * 20) },
-                { id: 7, name: "Station 7", lat: 53.3558, lng: -6.2663, bikesAvailable: Math.floor(Math.random() * 20) },
-                { id: 8, name: "Station 8", lat: 53.3568, lng: -6.2673, bikesAvailable: Math.floor(Math.random() * 20) },
-                { id: 9, name: "Station 9", lat: 53.3578, lng: -6.2683, bikesAvailable: Math.floor(Math.random() * 20) },
-                { id: 10, name: "Station 10", lat: 53.3588, lng: -6.2693, bikesAvailable: Math.floor(Math.random() * 20) }
-            ];
+            const map = L.map('map').setView([53.3498, -6.2603], 13);
         
-            function initMap() {
-                // Initialize the map
-                map = new google.maps.Map(document.getElementById('map'), {
-                    center: { lat: 53.3498, lng: -6.2603 },
-                    zoom: 14
-                });
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
         
-                // Loop through the stations and add a marker for each one
-                stations.forEach(station => {
-                    const marker = new google.maps.Marker({
-                        position: { lat: station.lat, lng: station.lng },
-                        map: map,
-                        title: station.name
+            // Fetch JCDecaux station data
+            fetch(`https://api.jcdecaux.com/vls/v1/stations?contract=dublin&apiKey=${apiKey}`)
+                .then(response => response.json())
+                .then(stations => {
+                    stations.forEach(station => {
+                        const marker = L.marker([station.position.lat, station.position.lng]).addTo(map);
+                        marker.bindPopup(`
+                            <div style="min-width:180px">
+                                <h5 style="margin: 0 0 4px;">${station.name}</h5>
+                                <hr style="margin: 4px 0;">
+                                <p style="margin: 0;"><strong>Bikes:</strong> ${station.available_bikes}</p>
+                                <p style="margin: 0;"><strong>Stands:</strong> ${station.available_bike_stands}</p>
+                            </div>
+                        `);
                     });
-        
-                    // Add click event to each marker using addListener
-                    marker.addListener('click', function() {
-                        console.log("Marker clicked: " + station.name); // Debugging line
-                        showBikeTable(station, marker); // Pass marker to InfoWindow function
-                    });
+                })
+                .catch(err => {
+                    console.error('Error loading JCDecaux data:', err);
                 });
-            }
-        
-            // Function to show the bike availability table
-            function showBikeTable(station, marker) {
-                // Log to check if the function is called
-                console.log("Showing bike table for station:", station.name); // Debugging line
-        
-                // Simplified table content for debugging
-                const tableHtml = `
-                    <div style="
-                        padding: 0.5rem; 
-                        font-wight: 100;
-                        background-color: #ffffff;
-                        max-width: 220px;
-                    ">
-                        <h4 style="margin: 0 0 0.25rem; font-size: 1.1rem; color: #2c3e50;">
-                            ${station.name}
-                        </h4>
-                        <hr style="border: none; border-top: 1px solid #eee; margin: 0.5rem 0;">
-                        <p style="margin: 0; font-size: 0.95rem; color: #34495e;">
-                            <i class="fa-solid fa-person-biking"></i>  Bikes available: <strong>${station.bikesAvailable}</strong>
-                        </p>
-                    </div>
-                `;
-        
-                // Create the InfoWindow with the simplified table content
-                const infoWindow = new google.maps.InfoWindow({
-                    content: tableHtml
-                });
-        
-                // Ensure the InfoWindow opens on the clicked marker
-                infoWindow.open(map, marker);  // Use the 'marker' that was clicked
-            }
         </script>
+        
             
         {% endblock %}
     </body>
