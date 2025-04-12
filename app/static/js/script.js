@@ -1,4 +1,4 @@
-// NAVIGATION MENU LOGIC
+/* NAVIGATION MENU LOGIC */
 const hamburgerMenu = document.getElementById('hamburger-menu');
 const loginIcon = document.getElementById('login-icon');
 const navBar = document.querySelector('.nav-bar');
@@ -55,120 +55,158 @@ allLinks.forEach(link => {
   link.addEventListener('click', () => closeMenu());
 });
 
-
-// LEAFLET MAP + JCDECAUX INTEGRATION
+/* LEAFLET MAP & JCDECAUX INTEGRATION */
+const apiKey = 'c68dab54bda9ba1de22a1c7fc5d29ed1537e33ca';
 const map = L.map('map').setView([53.3498, -6.2603], 13);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-// 🚲 JCDecaux API integration
-const apiKey = 'c68dab54bda9ba1de22a1c7fc5d29ed1537e33ca'; // Replace with your real API key
-
-fetch(`https://api.jcdecaux.com/vls/v1/stations?contract=dublin&apiKey=${apiKey}`)
+// Global arrays for station data and markers
 let allStations = [];
 let allMarkers = [];
 
-// Helper to clear current markers
+// Elements for search and filter
+const searchInput = document.getElementById('search-input');
+const bikeFilter = document.getElementById('bike-filter');
+const bikeCountDisplay = document.getElementById('bike-filter-display'); // displays current filter value
+
+// Clear markers from the map
 function clearMarkers() {
-    allMarkers.forEach(marker => map.removeLayer(marker));
-    allMarkers = [];
+  allMarkers.forEach(marker => map.removeLayer(marker));
+  allMarkers = [];
 }
 
-// Render markers based on filter/search
-function updateMarkers() {
-    const query = searchInput.value.toLowerCase();
-    const minBikes = parseInt(bikeFilter.value);
-    bikeCountDisplay.textContent = minBikes;
+// Update the station sidebar with details, call the prediction API,
+// and if available_bikes is 0, call the recommendation endpoint.
+function updateSidebar(station) {
+  document.getElementById('sidebar-station-name').textContent = station.name;
+  document.getElementById('sidebar-bikes').textContent = station.available_bikes;
+  document.getElementById('sidebar-stands').textContent = station.available_bike_stands;
 
-    clearMarkers();
+  // Get current day and hour for prediction
+  const now = new Date();
+  const daysArr = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const dayName = daysArr[now.getDay()];
+  const currentHour = now.getHours();
+  const stationId = station.number; // assuming the station's "number" field is its ID
 
-    allStations.forEach(station => {
-        const name = station.name.toLowerCase();
-        if (name.includes(query) && station.available_bikes >= minBikes) {
-            const marker = L.marker([station.position.lat, station.position.lng]).addTo(map);
-            marker.bindPopup(`
-                <div style="min-width:180px">
-                    <h5 style="margin: 0 0 4px;">${station.name}</h5>
-                    <hr style="margin: 4px 0;">
-                    <p style="margin: 0;"><strong>Bikes:</strong> ${station.available_bikes}</p>
-                    <p style="margin: 0;"><strong>Stands:</strong> ${station.available_bike_stands}</p>
-                </div>
-            `);
-            allMarkers.push(marker);
-        }
-    });
-}
-
-// Fetch station data and initialize
-fetch(`https://api.jcdecaux.com/vls/v1/stations?contract=dublin&apiKey=${apiKey}`)
-  .then(response => response.json())
-  .then(stations => {
-    stations.forEach(station => {
-      if (station.position) {
-        const marker = L.marker([station.position.lat, station.position.lng]).addTo(map);
-        marker.bindPopup(`
-          <div style="min-width:180px">
-              <h5 style="margin: 0 0 4px;">${station.name}</h5>
-              <hr style="margin: 4px 0;">
-              <p style="margin: 0;"><strong>Bikes:</strong> ${station.available_bikes}</p>
-              <p style="margin: 0;"><strong>Stands:</strong> ${station.available_bike_stands}</p>
-          </div>
-        `);
+  // Call the Flask prediction API
+  fetch(`/predict_bikes?station_id=${stationId}&day=${encodeURIComponent(dayName)}&hour=${currentHour}`)
+    .then(response => response.json())
+    .then(data => {
+      const predictionElement = document.getElementById('sidebar-prediction');
+      if (data.error) {
+        predictionElement.textContent = "Predicted Bikes: Error";
+      } else {
+        predictionElement.textContent = "Predicted Bikes: " + data.predicted_bikes;
       }
+    })
+    .catch(err => {
+      console.error('Prediction API error:', err);
+      document.getElementById('sidebar-prediction').textContent = "Predicted Bikes: Error";
     });
-  })
-  .catch(err => console.error('JCDecaux fetch error:', err));
 
-// Live update on user input
-searchInput.addEventListener('input', updateMarkers);
-bikeFilter.addEventListener('input', updateMarkers);
-function getMarkerColor(bikesAvailable) {
-  if (bikesAvailable === 0) return 'red';
-  if (bikesAvailable <= 3) return 'orange';
-  return 'green';
+  // If there are zero bikes, call the recommendation endpoint
+  if (station.available_bikes === 0) {
+    fetch(`/recommend_stations?station_id=${stationId}&condition=need_bikes`)
+      .then(response => response.json())
+      .then(data => {
+        let recContainer = document.getElementById("sidebar-recommendations");
+        // Create the container if it doesn't exist
+        if (!recContainer) {
+          recContainer = document.createElement("div");
+          recContainer.id = "sidebar-recommendations";
+          // Append below the prediction element
+          document.getElementById('station-sidebar').appendChild(recContainer);
+        }
+        if (data.error || !data.recommendations || data.recommendations.length === 0) {
+          recContainer.innerHTML = "<p>No recommendations available.</p>";
+        } else {
+          let html = "<h6>Recommended Nearby Stations:</h6><ul>";
+          data.recommendations.forEach(function(rec) {
+            html += `<li>${rec.name} (${rec.distance_km} km) - Bikes: ${rec.available_bikes}</li>`;
+          });
+          html += "</ul>";
+          recContainer.innerHTML = html;
+        }
+      })
+      .catch(err => {
+        console.error("Recommendation API error:", err);
+      });
+  } else {
+    // Remove recommendation container if bikes are available
+    const recContainer = document.getElementById("sidebar-recommendations");
+    if (recContainer) {
+      recContainer.remove();
+    }
+  }
+
+  // Open the sidebar
+  document.getElementById('station-sidebar').style.right = '0';
 }
-const icon = L.icon({
-  iconUrl: `/static/icons/marker-${getMarkerColor(station.available_bikes)}.png`,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34]
-});
 
-const marker = L.marker([station.position.lat, station.position.lng], { icon }).addTo(map);
-const searchInput = document.getElementById("search-bar");
+// Filter markers based on search input and minimum available bikes
+function updateMarkers() {
+  const query = searchInput ? searchInput.value.toLowerCase() : "";
+  const minBikes = bikeFilter ? parseInt(bikeFilter.value) : 0;
 
-searchInput.addEventListener("input", (e) => {
-  const searchTerm = e.target.value.toLowerCase();
-  markers.forEach(({ station, marker }) => {
-    const isVisible = station.name.toLowerCase().includes(searchTerm);
-    if (isVisible) {
-      marker.addTo(map);
-    } else {
-      map.removeLayer(marker);
+  // Update filter display if available
+  if (bikeCountDisplay) {
+    bikeCountDisplay.textContent = "Min Bikes: " + minBikes;
+  }
+
+  clearMarkers();
+
+  allStations.forEach(station => {
+    const stationName = station.name.toLowerCase();
+    if (stationName.includes(query) && station.available_bikes >= minBikes) {
+      // Create a marker for this station
+      let marker = L.marker([station.position.lat, station.position.lng]).addTo(map);
+      marker.bindPopup(`
+        <div style="min-width:180px">
+          <h5 style="margin: 0 0 4px;">${station.name}</h5>
+          <hr style="margin: 4px 0;">
+          <p style="margin: 0;"><strong>Bikes:</strong> ${station.available_bikes}</p>
+          <p style="margin: 0;"><strong>Stands:</strong> ${station.available_bike_stands}</p>
+        </div>
+      `);
+      // On marker click, update the sidebar with station info, prediction, and recommendations if needed
+      marker.on('click', () => {
+        updateSidebar(station);
+      });
+      allMarkers.push(marker);
     }
   });
-});
-const filterCheckbox = document.getElementById("show-available-only");
-filterCheckbox.addEventListener("change", (e) => {
-  const showOnlyAvailable = e.target.checked;
-  markers.forEach(({ station, marker }) => {
-    const shouldShow = !showOnlyAvailable || station.available_bikes > 0;
-    if (shouldShow) {
-      marker.addTo(map);
-    } else {
-      map.removeLayer(marker);
-    }
-  });
-});
-setInterval(fetchStations, 60000); // Re-fetch data every 60 seconds
-// Save
-localStorage.setItem("showAvailableOnly", showOnlyAvailable);
-
-// Load
-const saved = localStorage.getItem("showAvailableOnly");
-if (saved === "true") {
-  filterCheckbox.checked = true;
 }
+
+// Fetch station data from JCDecaux and initialize markers
+function fetchStations() {
+  fetch(`https://api.jcdecaux.com/vls/v1/stations?contract=dublin&apiKey=${apiKey}`)
+    .then(response => response.json())
+    .then(stations => {
+      allStations = stations;
+      updateMarkers();
+    })
+    .catch(err => console.error('JCDecaux fetch error:', err));
+}
+
+// Initial fetch and refresh every 60 seconds
+fetchStations();
+setInterval(fetchStations, 60000);
+
+// Set up live updating for search and filter inputs
+if (searchInput) {
+  searchInput.addEventListener('input', updateMarkers);
+}
+if (bikeFilter) {
+  bikeFilter.addEventListener('input', updateMarkers);
+}
+
+// Sidebar close function (called by the sidebar close button)
+function closeSidebar() {
+  document.getElementById('station-sidebar').style.right = '-320px';
+}
+fetch(`/recommend_stations?station_id=${stationId}&condition=need_bikes`)
 
