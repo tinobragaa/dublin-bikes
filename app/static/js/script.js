@@ -171,3 +171,4 @@ const saved = localStorage.getItem("showAvailableOnly");
 if (saved === "true") {
   filterCheckbox.checked = true;
 }
+

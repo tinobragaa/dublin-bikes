@@ -1,235 +1,304 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Find nearby bikes to rent and check real-time availability">
-        <meta name="keywords" content="bike rental, dublin bikes, cycling">
-        <meta name="author" content="Valentino Braga, Sirui Wei and Charan Singu.">
-    
-        <!-- CSS -->
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Find nearby bikes to rent and check real-time availability">
+    <meta name="keywords" content="bike rental, dublin bikes, cycling">
+    <meta name="author" content="Valentino Braga, Sirui Wei and Charan Singu.">
 
-        <!-- Icons -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon/favicon.png') }}">
 
-        <!-- Leaflet CSS -->
-        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<!-- Leaflet JS -->
-        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-        <!-- Favicon -->
-        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon/favicon.png') }}">
-    
-        <title>{% block extra_title %}{% endblock %}Dublin Bikes</title>
-    </head>
-    <body>
-        <div class="content">
-            <header>
-                <nav class="nav-bar">
-                    <div class="top-content">
-                      <div class="icon-container left">
+    <title>{% block extra_title %}{% endblock %}Dublin Bikes</title>
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+        }
+
+        #station-sidebar {
+            position: fixed;
+            top: 80px;
+            right: -320px;
+            width: 300px;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.15);
+            padding: 1rem;
+            z-index: 1000;
+            transition: right 0.3s ease-in-out;
+            border-radius: 8px 0 0 8px;
+        }
+
+        #station-sidebar h5 {
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+
+        #station-sidebar p {
+            margin: 0.5rem 0;
+        }
+
+        #station-sidebar button {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            float: right;
+            cursor: pointer;
+        }
+
+        #weather-overlay {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #acacad;
+    color: rgb(14, 13, 13);
+    padding: 0.5rem; /* Reduce padding */
+    border-radius: 10px;
+    z-index: 10;
+    width: 250px;
+    box-shadow: 0 5px 20px rgba(232, 228, 228, 0.2);
+    font-size: 0.9rem;
+    height: auto; /* Ensure the height adjusts automatically based on content */
+    max-height: 200px; /* Optional: Set max height for overflow control */
+    overflow: hidden; /* Optional: Hide excess content if it overflows */
+}
+
+#weather-overlay h5 {
+    margin: 0 0 1rem 0; /* Reduce bottom margin of the heading */
+    font-weight: 600;
+}
+
+#weather-overlay button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 0.5rem;
+}
+
+    </style>  
+</head>
+<body>
+    <div class="content">
+        <header>
+            <nav class="nav-bar">
+                <div class="top-content">
+                    <div class="icon-container left">
                         <button aria-label="Open navigation menu" class="nav-button" id="hamburger-menu">
-                          <i class="fa-solid fa-grip-lines fa-lg nav-icon"></i>
+                            <i class="fa-solid fa-grip-lines fa-lg nav-icon"></i>
                         </button>
-                      </div>
-                      <h1 class="logo"><a href="/">Dublin Bi<span class="ylw-font">k</span>es</a></h1>
-                      <div class="icon-container right">
-                        <button aria-label="Open login menu" class="nav-button" id="login-icon">
-                          <i class="fa-solid fa-user fa-lg nav-icon"></i>
-                        </button>
-                      </div>
                     </div>
-                    <div class="nav-links-container" id="nav-links">
-                      <div class="links-set" id="hamburger-links">
+                    <h1 class="logo"><a href="/">Dublin Bi<span class="ylw-font">k</span>es</a></h1>
+                    <div class="icon-container right">
+                        <button aria-label="Open login menu" class="nav-button" id="login-icon">
+                            <i class="fa-solid fa-user fa-lg nav-icon"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="nav-links-container" id="nav-links">
+                    <div class="links-set" id="hamburger-links">
                         <hr class="divider">
                         {% if current_user.is_authenticated %}
                         <a href="#map-section">Maps</a>
                         <a href="#instruction-section">Instructions</a>
                         {% else %}
-                            <a href="#map-section">Maps</a>
-                            <a href="#instruction-section">Instructions</a>
-                            <a href="{{ url_for('auth.signup') }}">Join</a>
+                        <a href="#map-section">Maps</a>
+                        <a href="#instruction-section">Instructions</a>
+                        <a href="{{ url_for('auth.signup') }}">Join</a>
                         {% endif %}
-                      </div>
-                      <div class="links-set" id="login-links">
+                    </div>
+                    <div class="links-set" id="login-links">
                         <hr class="divider">
                         {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('auth.logout') }}" class="nav-auth-link">Logout</a>
+                        <a href="{{ url_for('auth.logout') }}" class="nav-auth-link">Logout</a>
                         {% else %}
-                            <a href="{{ url_for('auth.login') }}" class="nav-auth-link">Login</a>
-                            <a href="{{ url_for('auth.signup') }}" class="nav-auth-link">Sign Up</a>
+                        <a href="{{ url_for('auth.login') }}" class="nav-auth-link">Login</a>
+                        <a href="{{ url_for('auth.signup') }}" class="nav-auth-link">Sign Up</a>
                         {% endif %}
-                      </div>
                     </div>
-                  </nav>
-            </header>
-            <!-- Flash Messages -->
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }} alert-dismissible fade show">
-                            {{ message }}
-                            <button type="button" class="close" data-dismiss="alert">
-                                <span>&times;</span>
-                            </button>
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-            <main>
-                <section class="back-color">
-                    <div class="hero-container">
-                        <div class="l-pad hero-content">
-                            <h2 class="img-title">Safe<span class="ylw-font">.</span></h2>
-                            <h2 class="img-title">Smart<span class="ylw-font">.</span></h2>
-                            <h2 class="img-title">Affordable<span class="ylw-font">.</span></h2>
-                            <p>Use Dublin Bikes for your daily commute and to explore the city.</p>
-                            <a href="#map-section" class="link-title-style">
-                                <div>
-                                    <i class="fa-solid fa-square-arrow-up-right icon-title"></i>
-                                    <span>Explore</span>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </section>
-                <section id="map-section" style="margin: 1rem;">
-                    <div class="map-controls" style="max-width: 400px; margin-bottom: 1rem;">
-                        <input 
-                            type="text" 
-                            id="search-input" 
-                            placeholder="Search station by name..."
-                            style="padding: 0.5rem; width: 100%; margin-bottom: 0.5rem;">
-                        
-                        <label for="bike-filter">Min. bikes: <span id="bike-count-display">0</span></label>
-                        <input 
-                            type="range" 
-                            id="bike-filter" 
-                            min="0" 
-                            max="20" 
-                            value="0" 
-                            style="width: 100%;">
-                    </div>
-                    <div id="map" style="
-                        height: 600px; 
-                        width: 100%; 
-                        overflow: hidden;
-                        box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                    </div>
-                </section>
-                
-                    <div id="map" style="
-                        height: 600px; 
-                        width: 100%; 
-                        overflow: hidden;
-                        box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-                    </div>
-                </section>
-                <section id="instruction-section">
-                    <div class="instructions-container">
-                        <div class="station-image">
-                            <img src="{{ url_for('static', filename='images/bike-station.webp') }}" 
-                                 alt="Bike Station" 
-                                 class="img-fluid">
-                        </div>
-                        <div class="instructions-content">
-                             <h2>How to ride a Dublin Bike</h2>
-                            <div class="instructions-subtitle">
-                                <span class="material-symbols-outlined">looks_one</span>
-                                <h3>Find a ride</h3>
-                            </div>
-                            <p>Find a bike in one of the stations or locate one using the map in your app.</p>
-                            <div class="instructions-subtitle">
-                                <span class="material-symbols-outlined">looks_two</span>
-                                <h3>Unlock with the app</h3>
-                            </div>
-                            <p>Use the Dublin Bikes app to unlock the bike and start your ride!</p>
-                            <div class="instructions-subtitle">
-                                <span class="material-symbols-outlined">looks_3</span>
-                                <h3>Follow safety rules</h3>
-                            </div>
-                            <p>Follow traffic rules. Use bike lanes and wear a helmet to stay safe.</p>
-                            <div class="instructions-subtitle">
-                                <span class="material-symbols-outlined">looks_4</span>
-                                <h3>Park with care</h3>
-                            </div>
-                            <p>Park your bike in designated stations across town.</p>
-                        </div>
-                    </div>
-                </section>
-                <section id="story-section">
-                    <div class="story-container">
-                        <div class="l-pad story-content">
-                            <h2 class="img-title">Live for the moment</h2>
-                            <p>We're reimagining every ride for the future of moving.</p>
-                            <a href="{{ url_for('auth.signup') }}" class="link-title-style">
-                                <div>
-                                    <i class="fa-solid fa-square-arrow-up-right icon-title"></i>
-                                    <span>Create your account</span>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </section>
-            </main>
-        </div>
-        <footer>
-            <div class="footer-title">
-                <p><a href="/">Dublin Bi<span class="ylw-font">k</span>es</a></p>
-                <hr class="divider">
-            </div>
-            <div class="footer-container">
-                <ul class="social-links">
-                    <li><a href="https://instagram.com" target="_blank" rel="noopener">Instagram</a></li>
-                    <li><a href="https://youtube.com" target="_blank" rel="noopener">YouTube</a></li>
-                    <li><a href="https://tiktok.com" target="_blank" rel="noopener">TikTok</a></li>
-                </ul>
-                <ul class="other-links">
-                    <li><a href="#map-section">Map</a></li>
-                    <li><a href="#instruction-section">Instructions</a></li>
-                    <li><a href="{{ url_for('auth.signup') }}">Join</a></li>
-                </ul>
-            </div>
-        </footer>
+                </div>
+            </nav>
+        </header>
 
-        {% block customjs %}
-        <!-- JS -->
-        <script src="{{ url_for('static', filename='js/script.js') }}"></script>
-        <!-- Font Awesome -->
-        <script src="https://kit.fontawesome.com/6131d31248.js" crossorigin="anonymous"></script>
-        <script>
-            const apiKey = 'c68dab54bda9ba1de22a1c7fc5d29ed1537e33ca'; // Replace with your real JCDecaux API key
-        
-            const map = L.map('map').setView([53.3498, -6.2603], 13);
-        
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(map);
-        
-            // Fetch JCDecaux station data
-            fetch(`https://api.jcdecaux.com/vls/v1/stations?contract=dublin&apiKey=${apiKey}`)
-                .then(response => response.json())
-                .then(stations => {
-                    stations.forEach(station => {
-                        const marker = L.marker([station.position.lat, station.position.lng]).addTo(map);
-                        marker.bindPopup(`
-                            <div style="min-width:180px">
-                                <h5 style="margin: 0 0 4px;">${station.name}</h5>
-                                <hr style="margin: 4px 0;">
-                                <p style="margin: 0;"><strong>Bikes:</strong> ${station.available_bikes}</p>
-                                <p style="margin: 0;"><strong>Stands:</strong> ${station.available_bike_stands}</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <main>
+            <section class="back-color">
+                <div class="hero-container">
+                    <div id="weather-overlay">
+                        <div id="current-weather">
+                            <h5>Weather</h5>
+                            <p id="current-temp">Loading...</p>
+                            <p id="forecast">Loading forecast...</p>
+                            <p id="weather-icon"></p> 
+                        </div>
+                        <button id="weather-refresh" title="Refresh" aria-label="Refresh weather">
+                            <i class="fa-solid fa-sync"></i>
+                        </button>
+                    </div>                    
+                    <div class="l-pad hero-content">
+                        <h2 class="img-title">Safe<span class="ylw-font">.</span></h2>
+                        <h2 class="img-title">Smart<span class="ylw-font">.</span></h2>
+                        <h2 class="img-title">Affordable<span class="ylw-font">.</span></h2>
+                        <p>Use Dublin Bikes for your daily commute and to explore the city.</p>
+                        <a href="#map-section" class="link-title-style">
+                            <div>
+                                <i class="fa-solid fa-square-arrow-up-right icon-title"></i>
+                                <span>Explore</span>
                             </div>
-                        `);
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MAP & SIDEBAR -->
+            <section id="map-section" style="margin: 1rem;">
+                <div class="map-controls" style="max-width: 400px; margin-bottom: 1rem;">
+                    <input 
+                        type="text" 
+                        id="search-input" 
+                        placeholder="Search station by name..."
+                        style="padding: 0.5rem; width: 100%; margin-bottom: 0.5rem;">
+                    <input 
+                        type="range" 
+                        id="bike-filter" 
+                        min="0" 
+                        max="20" 
+                        value="0" 
+                        style="width: 100%;">
+                </div>
+                <div id="map" style="height: 600px; width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></div>
+
+                <!-- Station Info Sidebar -->
+                <div id="station-sidebar">
+                    <button onclick="closeSidebar()">&times;</button>
+                    <h5 id="sidebar-station-name">Station Name</h5>
+                    <p><strong>Available Bikes:</strong> <span id="sidebar-bikes">0</span></p>
+                    <p><strong>Available Stands:</strong> <span id="sidebar-stands">0</span></p>
+                </div>
+            </section>
+
+            <!-- INSTRUCTIONS -->
+            <section id="instruction-section">
+                <div class="instructions-container">
+                    <div class="station-image">
+                        <img src="{{ url_for('static', filename='images/bike-station.webp') }}" alt="Bike Station" class="img-fluid">
+                    </div>
+                    <div class="instructions-content">
+                        <h2>How to ride a Dublin Bike</h2>
+                        <div class="instructions-subtitle">
+                            <span class="material-symbols-outlined">looks_one</span>
+                            <h3>Find a ride</h3>
+                        </div>
+                        <p>Find a bike in one of the stations or locate one using the map in your app.</p>
+                        <div class="instructions-subtitle">
+                            <span class="material-symbols-outlined">looks_two</span>
+                            <h3>Unlock with the app</h3>
+                        </div>
+                        <p>Use the Dublin Bikes app to unlock the bike and start your ride!</p>
+                        <div class="instructions-subtitle">
+                            <span class="material-symbols-outlined">looks_3</span>
+                            <h3>Follow safety rules</h3>
+                        </div>
+                        <p>Follow traffic rules. Use bike lanes and wear a helmet to stay safe.</p>
+                        <div class="instructions-subtitle">
+                            <span class="material-symbols-outlined">looks_4</span>
+                            <h3>Park with care</h3>
+                        </div>
+                        <p>Park your bike in designated stations across town.</p>
+                    </div>
+                </div>
+            </section>
+            <!-- STORY -->
+            <section id="story-section">
+                <div class="story-container">
+                    <div class="l-pad story-content">
+                        <h2 class="img-title">Live for the moment</h2>
+                        <p>We're reimagining every ride for the future of moving.</p>
+                        <a href="{{ url_for('auth.signup') }}" class="link-title-style">
+                            <div>
+                                <i class="fa-solid fa-square-arrow-up-right icon-title"></i>
+                                <span>Create your account</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        <div class="footer-title">
+            <p><a href="/">Dublin Bi<span class="ylw-font">k</span>es</a></p>
+            <hr class="divider">
+        </div>
+        <div class="footer-container">
+            <ul class="social-links">
+                <li><a href="https://instagram.com" target="_blank" rel="noopener">Instagram</a></li>
+                <li><a href="https://youtube.com" target="_blank" rel="noopener">YouTube</a></li>
+                <li><a href="https://tiktok.com" target="_blank" rel="noopener">TikTok</a></li>
+            </ul>
+            <ul class="other-links">
+                <li><a href="#map-section">Map</a></li>
+                <li><a href="#instruction-section">Instructions</a></li>
+                <li><a href="{{ url_for('auth.signup') }}">Join</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    {% block customjs %}
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/weather.js') }}"></script>
+    <script src="https://kit.fontawesome.com/6131d31248.js" crossorigin="anonymous"></script>
+    <script>
+        const apiKey = 'c68dab54bda9ba1de22a1c7fc5d29ed1537e33ca';
+        const map = L.map('map').setView([53.3498, -6.2603], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        fetch(`https://api.jcdecaux.com/vls/v1/stations?contract=dublin&apiKey=${apiKey}`)
+            .then(response => response.json())
+            .then(stations => {
+                stations.forEach(station => {
+                    const marker = L.marker([station.position.lat, station.position.lng]).addTo(map);
+
+                    marker.on('click', () => {
+                        document.getElementById('sidebar-station-name').textContent = station.name;
+                        document.getElementById('sidebar-bikes').textContent = station.available_bikes;
+                        document.getElementById('sidebar-stands').textContent = station.available_bike_stands;
+                        document.getElementById('station-sidebar').style.right = '0';
                     });
-                })
-                .catch(err => {
-                    console.error('Error loading JCDecaux data:', err);
                 });
-        </script>
-        
-            
-        {% endblock %}
-    </body>
+            })
+            .catch(err => {
+                console.error('Error loading JCDecaux data:', err);
+            });
+
+        function closeSidebar() {
+            document.getElementById('station-sidebar').style.right = '-320px';
+        }
+    </script>
+    {% endblock %}
+</body>
 </html>
