@@ -7,8 +7,6 @@ The goal of the project is to merge functionality, usability, and predictive ins
 
 ![Website Mockup Image](/docs/features/dublinbikes-mockup.png)
 
-[Live Website](http://16.170.206.160/)
-
 ## Table of Contents
 
 - [Dublin Bikes](#dublin-bikes)
