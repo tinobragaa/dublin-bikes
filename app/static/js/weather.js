@@ -1,8 +1,9 @@
 const weatherOverlay = document.getElementById('weather-overlay');
 const currentTempEl = document.getElementById('current-temp');
 const forecastEl = document.getElementById('forecast');
+const forecastCode = document.getElementById('weather-code');
 const refreshButton = document.getElementById('weather-refresh');
-const weatherIconEl = document.getElementById('weather-icon'); // <-- Make sure this exists in your HTML
+const weatherIconEl = document.getElementById('weather-icon');
 
 // Fetch weather data for Dublin
 async function fetchWeather() {
@@ -21,14 +22,20 @@ async function fetchWeather() {
 
         // Apply visuals
         if (weatherIconEl) weatherIconEl.textContent = visuals.icon;
-        if (weatherOverlay) weatherOverlay.style.background = visuals.bgColor;
-
-        currentTempEl.textContent = `Current Temp: ${currentTemp}°C, ${mapWeatherCode(weatherCode)}`;
+        if (weatherOverlay) {
+            // Apply background colour
+            weatherOverlay.style.backgroundImage = 'linear-gradient(135deg, rgba(34,34,34,0.5), rgba(34,34,34,0.3))';
+            weatherOverlay.style.backdropFilter = 'blur(30px)';
+            weatherOverlay.style.webkitBackdropFilter = 'blur(30px)';
+        }
+        
+        currentTempEl.textContent = `${Math.round(currentTemp)}°`;
+        forecastCode.textContent = `${mapWeatherCode(weatherCode)}`;
 
         // Simple forecast
-        const todayMin = data.daily.temperature_2m_min[0];
-        const todayMax = data.daily.temperature_2m_max[0];
-        forecastEl.textContent = `Today: ${todayMin}°C - ${todayMax}°C`;
+        const todayMin = Math.round(data.daily.temperature_2m_min[0]);
+        const todayMax = Math.round(data.daily.temperature_2m_max[0]);
+        forecastEl.textContent = `H:${todayMax}° L:${todayMin}°`;
 
     } catch (error) {
         console.error('Weather fetch failed:', error);

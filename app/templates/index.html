@@ -58,44 +58,60 @@
       position: absolute;
       top: 20px;
       right: 20px;
-      /* New Gradient Background and modern look */
-      background: linear-gradient(135deg, #80d0c7, #13547a);
+      background: linear-gradient(135deg, rgba(34,34,34,0.5), rgba(34,34,34,0.3));
+      border: 1px solid rgba(255, 255, 255, 0.1);
       color: #fff;
       padding: 1rem;
       border-radius: 12px;
       z-index: 10;
       width: 250px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       font-size: 0.9rem;
       max-height: 200px;
       overflow: hidden;
-      transition: transform 0.3s;
+      transition: transform 1s;
+      text-align: center;
     }
-    #weather-overlay:hover {
-      transform: scale(1.03);
-    }
-    #weather-overlay h5 {
+
+    #weather-overlay h6 {
+      font-family: "Major Mono Display", serif;
       margin: 0 0 0.5rem 0;
-      font-weight: 600;
-      font-size: 1.2rem;
+      font-weight: 100;
+      font-size: 1.4rem;
     }
+
+    .weather-divider {
+      border: 0.5px solid rgba(255, 255, 255, 0.6);
+      margin: 0 0 8px;
+    }
+
+    #weather-code {
+      font-weight: 100;
+      margin: 0;
+      font-size: 0.7rem;
+    }
+
     /* Current Temperature as primary info */
     #current-temp {
-      font-size: 1.5rem;
-      font-weight: 600;
+      font-size: 2.5rem;
+      font-weight: 100;
       margin: 0;
+      position: relative;
+      left: 5px;
     }
+
     /* Forecast text - smaller than temp */
     #forecast {
-      font-size: 1rem;
+      font-size: 0.7rem;
       opacity: 0.9;
-      margin-top: 0.5rem;
+      font-weight: 100;
+      margin: 0;
     }
+
     /* Weather Icon larger */
     #weather-icon {
       font-size: 1.5rem;
-      margin-top: 0.5rem;
     }
+
     /* Refresh button styling */
     #weather-refresh {
       background: rgba(255, 255, 255, 0.3);
@@ -108,9 +124,17 @@
       cursor: pointer;
       transition: background 0.3s;
     }
+
     #weather-refresh:hover {
       background: rgba(255, 255, 255, 0.5);
     }
+
+    #weather-refresh:focus {
+      outline: none;
+      box-shadow: none;
+      border: none; 
+    }
+
     #weather-refresh i {
       animation: spin 1s linear infinite;
     }
@@ -172,12 +196,15 @@
     {% endwith %}
 
     <main>
+      <!-- WEATHER BOX -->
       <section class="back-color">
         <div class="hero-container">
           <div id="weather-overlay">
             <div id="current-weather">
-              <h5>Weather</h5>
+              <h6>Weather</h6>
+              <hr class="weather-divider">
               <p id="current-temp">Loading...</p>
+              <p id="weather-code">Loading forecast...</p>
               <p id="forecast">Loading forecast...</p>
               <p id="weather-icon"></p> 
             </div>
@@ -201,7 +228,7 @@
       </section>
 
       <!-- MAP & SIDEBAR -->
-      <section id="map-section" style="margin: 1rem;">
+      <section id="map-section" style="margin: 0.5rem;">
         <div class="map-controls" style="max-width: 400px; margin-bottom: 1rem;">
           <input 
               type="text" 
@@ -218,7 +245,7 @@
           <!-- Display current filter value -->
           <div id="bike-filter-display" style="text-align:center; margin-top:4px;"></div>
         </div>
-        <div id="map" style="height: 600px; width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1;"></div>
+        <div id="map" style="height: 600px; width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1; border-radius: 5px"></div>
 
         <!-- Station Info Sidebar -->
         <div id="station-sidebar">
