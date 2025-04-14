@@ -8,6 +8,7 @@ const loginLinks = document.getElementById('login-links');
 const allLinks = document.querySelectorAll('.nav-links-container a');
 
 let currentMenu = null;
+let sidebarTimeout = null;
 
 function openMenu(menuType) {
   navBar.classList.add('expanded');
@@ -145,6 +146,20 @@ function updateSidebar(station) {
 
   // Open the sidebar
   document.getElementById('station-sidebar').style.right = '0';
+
+  // Clear previous timeout if any
+  if (sidebarTimeout) {
+    clearTimeout(sidebarTimeout);
+  }
+
+  // Open the sidebar
+  document.getElementById('station-sidebar').style.right = '0';
+
+  // Set a new timeout to auto-close
+  sidebarTimeout = setTimeout(() => {
+    closeSidebar();
+  }, 3000);
+
 }
 
 // Filter markers based on search input and minimum available bikes
