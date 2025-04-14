@@ -14,7 +14,6 @@ The goal of the project is to merge functionality, usability, and predictive ins
 ## Features
 
 - **Map**
-<br>
 The interactive map is a core feature of the application, dynamically rendered using data fetched from the JCDecaux API. This data includes real-time information about bike stations across Dublin, such as location, name, and current bike availability. Each station is represented by a clickable pin on the map. When a user clicks a pin, a sidebar opens displaying detailed station information along with a machine learning-based prediction of future bike availability. At the bottom of the map, users can also filter stations using two input fields: one for searching by station name and another for filtering by available bike quantity.
 
 ![screenshot](/docs/features/map-final.png)
@@ -22,24 +21,23 @@ The interactive map is a core feature of the application, dynamically rendered u
 ![screenshot](/docs/features/search-control.png)
 
 - **Weather Box**
-<br>
 The weather box displays real-time weather information by integrating data from the OpenWeather API. It presents key details such as current conditions, temperature highs and lows, and a weather code (e.g., sunny, rainy) that reflects the forecast. To enhance the user experience, the component also includes a matching weather icon that visually represents the current conditions. This feature helps users make informed decisions about cycling based on the day’s weather outlook.
+
 ![screenshot](/docs/features/weather-box.png)
 
 - **Navigation Bar**
-<br>
 The navigation bar is implemented with a modern, minimalist design, using icon based elements that expand on click through JavaScript interactivity. It features a translucent, glass aesthetic with a blur effect, allowing background colours to show through and enhancing visual depth. The bar is fixed to the top of the screen, ensuring persistent accessibility as users scroll through the page. This design choice prioritises usability and seamless navigation across the interface.
 
 ![screenshot](/docs/features/nav-bar.png)
 
 - **Sign In Page**
-<br>
 The sign in page provides a straightforward interface for returning users to access their accounts. It maintains visual continuity with the rest of the application by retaining the navigation bar at the top and logo at the bottom. 
+
 ![screenshot](/docs/features/log-in-final.png)
 
 - **Sign Up Page**
-<br>
 The sign up page provides a straightforward interface where users can create an account. It maintains visual continuity with the rest of the application by retaining the navigation bar at the top and logo at the bottom. 
+
 ![screenshot](/docs/features/sign-up-final.png)
 
 ## Mockups vs. Production
