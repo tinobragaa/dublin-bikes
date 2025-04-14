@@ -227,36 +227,25 @@
         </div>
       </section>
 
-      <!-- MAP & SIDEBAR -->
-      <section id="map-section" style="margin: 0.5rem;">
-        <div class="map-controls" style="max-width: 400px; margin-bottom: 1rem;">
-          <input 
-              type="text" 
-              id="search-input" 
-              placeholder="Search station by name..."
-              style="padding: 0.5rem; width: 100%; margin-bottom: 0.5rem;">
-          <input 
-              type="range" 
-              id="bike-filter" 
-              min="0" 
-              max="20" 
-              value="0" 
-              style="width: 100%;">
-          <!-- Display current filter value -->
-          <div id="bike-filter-display" style="text-align:center; margin-top:4px;"></div>
-        </div>
-        <div id="map" style="height: 600px; width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1; border-radius: 5px"></div>
-
-        <!-- Station Info Sidebar -->
-        <div id="station-sidebar">
-          <button onclick="closeSidebar()">&times;</button>
-          <h5 id="sidebar-station-name">Station Name</h5>
-          <p><strong>Available Bikes:</strong> <span id="sidebar-bikes">0</span></p>
-          <!-- This new line shows prediction info -->
-          <p id="sidebar-prediction"><strong>Predicted Bikes:</strong> Loading...</p>
-          <p><strong>Available Stands:</strong> <span id="sidebar-stands">0</span></p>
+      <!-- MAP -->
+      <section id="map-section">
+        <div id="map"></div>
+        <div class="map-controls">
+          <input type="text" id="search-input" placeholder="Search station...">
+          <input type="range" id="bike-filter" min="0" max="20" value="0" style="flex: 1; min-width: 120px;"> 
+          <div id="bike-filter-display"></div>
         </div>
       </section>
+
+      <!-- Station Info Sidebar -->
+      <div id="station-sidebar">
+        <button onclick="closeSidebar()">&times;</button>
+        <h5 id="sidebar-station-name">Station Name</h5>
+        <p><strong>Available Bikes:</strong> <span id="sidebar-bikes">0</span></p>
+        <!-- This new line shows prediction info -->
+        <p id="sidebar-prediction"><strong>Predicted Bikes:</strong> Loading...</p>
+        <p><strong>Available Stands:</strong> <span id="sidebar-stands">0</span></p>
+      </div>
 
       <!-- INSTRUCTIONS -->
       <section id="instruction-section">
@@ -308,6 +297,7 @@
     </main>
   </div>
 
+  <!-- FOOTER -->
   <footer>
     <div class="footer-title">
       <p><a href="/">Dublin Bi<span class="ylw-font">k</span>es</a></p>

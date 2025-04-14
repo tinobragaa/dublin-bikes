@@ -347,3 +347,50 @@ html {
     float: right;
     cursor: pointer;
 }
+
+#map {
+    height: 600px; 
+    width: 100%; 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+    z-index: 1; 
+    border-radius: 5px;
+}
+
+#map-section {
+    margin: 0.5rem;
+    position: relative;
+}
+
+.map-controls {
+    display: flex; 
+    gap: 0.5rem; 
+    position: absolute; 
+    bottom: 1rem; 
+    left: 1rem; 
+    z-index: 10; 
+    background: rgba(34, 34, 34, 0.5); 
+    backdrop-filter: blur(20px); 
+    padding: 0.75rem; 
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    max-width: calc(100% - 2rem); 
+    flex-wrap: wrap;
+}
+
+#search-input {
+    padding: 0.5rem;
+    min-width: 200px;
+    flex: 1;
+}
+
+#bike-filter {
+    color: white;
+    text-align: center;
+    flex: 1;
+    min-width: 100px;
+}
+
+#bike-filter-display {
+    margin-top: 10px;
+    color: white;
+}
