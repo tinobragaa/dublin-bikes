@@ -11,6 +11,23 @@ The goal of the project is to merge functionality, usability, and predictive ins
 
 ## Table of Contents
 
+- [Dublin Bikes](#dublin-bikes)
+  * [Table of Contents](#table-of-contents)
+  * [Features](#features)
+    + [Map](#map)
+    + [Weather Box](#weather-box)
+    + [Navigation Bar](#navigation-bar)
+    + [Sign In Page](#sign-in-page)
+    + [Sign Up Page](#sign-up-page)
+  * [Mockups vs. Production](#mockups-vs-production)
+  * [Technologies Used](#technologies-used)
+    + [Languages and Frameworks](#languages-and-frameworks)
+    + [Resources and Tools](#resources-and-tools)
+  * [Deployment](#deployment)
+    + [EC2 Deployment](#ec2-deployment)
+    + [Fork](#fork)
+    + [Clone](#clone)
+
 ## Features
 
 ### Map
