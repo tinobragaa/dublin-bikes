@@ -64,62 +64,61 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-// Global arrays for station data and markers
 let allStations = [];
 let allMarkers = [];
 
-// Elements for search and filter
 const searchInput = document.getElementById('search-input');
 const bikeFilter = document.getElementById('bike-filter');
-const bikeCountDisplay = document.getElementById('bike-filter-display'); // displays current filter value
+const bikeCountDisplay = document.getElementById('bike-filter-display');
 
-// Clear markers from the map
 function clearMarkers() {
   allMarkers.forEach(marker => map.removeLayer(marker));
   allMarkers = [];
 }
 
-// Update the station sidebar with details, call the prediction API,
-// and if available_bikes is 0, call the recommendation endpoint.
 function updateSidebar(station) {
   document.getElementById('sidebar-station-name').textContent = station.name;
   document.getElementById('sidebar-bikes').textContent = station.available_bikes;
   document.getElementById('sidebar-stands').textContent = station.available_bike_stands;
 
-  // Get current day and hour for prediction
   const now = new Date();
   const daysArr = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const dayName = daysArr[now.getDay()];
   const currentHour = now.getHours();
-  const stationId = station.number; // assuming the station's "number" field is its ID
+  const stationId = station.number;
 
-  // Call the Flask prediction API
+  // Prediction API call
   fetch(`/predict_bikes?station_id=${stationId}&day=${encodeURIComponent(dayName)}&hour=${currentHour}`)
     .then(response => response.json())
     .then(data => {
       const predictionElement = document.getElementById('sidebar-prediction');
+      const future = new Date();
+      future.setHours(future.getHours() + 1);
+      const timeFormatted = future.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
       if (data.error) {
-        predictionElement.textContent = "Predicted Bikes: Error";
+        predictionElement.textContent = `Predicted Bikes (for ${timeFormatted}): Error`;
       } else {
-        predictionElement.textContent = "Predicted Bikes: " + data.predicted_bikes;
+        predictionElement.textContent = `Predicted Bikes (for ${timeFormatted}): ${data.predicted_bikes}`;
       }
     })
     .catch(err => {
       console.error('Prediction API error:', err);
-      document.getElementById('sidebar-prediction').textContent = "Predicted Bikes: Error";
+      const fallbackTime = new Date();
+      fallbackTime.setHours(fallbackTime.getHours() + 1);
+      const fallbackFormatted = fallbackTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('sidebar-prediction').textContent = `Predicted Bikes (for ${fallbackFormatted}): Error`;
     });
 
-  // If there are zero bikes, call the recommendation endpoint
+  // Recommendations if bikes == 0
   if (station.available_bikes === 0) {
     fetch(`/recommend_stations?station_id=${stationId}&condition=need_bikes`)
       .then(response => response.json())
       .then(data => {
         let recContainer = document.getElementById("sidebar-recommendations");
-        // Create the container if it doesn't exist
         if (!recContainer) {
           recContainer = document.createElement("div");
           recContainer.id = "sidebar-recommendations";
-          // Append below the prediction element
           document.getElementById('station-sidebar').appendChild(recContainer);
         }
         if (data.error || !data.recommendations || data.recommendations.length === 0) {
@@ -137,7 +136,6 @@ function updateSidebar(station) {
         console.error("Recommendation API error:", err);
       });
   } else {
-    // Remove recommendation container if bikes are available
     const recContainer = document.getElementById("sidebar-recommendations");
     if (recContainer) {
       recContainer.remove();
@@ -147,27 +145,19 @@ function updateSidebar(station) {
   // Open the sidebar
   document.getElementById('station-sidebar').style.right = '0';
 
-  // Clear previous timeout if any
   if (sidebarTimeout) {
     clearTimeout(sidebarTimeout);
   }
 
-  // Open the sidebar
-  document.getElementById('station-sidebar').style.right = '0';
-
-  // Set a new timeout to auto-close
   sidebarTimeout = setTimeout(() => {
     closeSidebar();
   }, 3000);
-
 }
 
-// Filter markers based on search input and minimum available bikes
 function updateMarkers() {
   const query = searchInput ? searchInput.value.toLowerCase() : "";
   const minBikes = bikeFilter ? parseInt(bikeFilter.value) : 0;
 
-  // Update filter display if available
   if (bikeCountDisplay) {
     bikeCountDisplay.textContent = "Min Bikes: " + minBikes;
   }
@@ -177,7 +167,6 @@ function updateMarkers() {
   allStations.forEach(station => {
     const stationName = station.name.toLowerCase();
     if (stationName.includes(query) && station.available_bikes >= minBikes) {
-      // Create a marker for this station
       let marker = L.marker([station.position.lat, station.position.lng]).addTo(map);
       marker.bindPopup(`
         <div style="min-width:180px">
@@ -187,7 +176,6 @@ function updateMarkers() {
           <p style="margin: 0;"><strong>Stands:</strong> ${station.available_bike_stands}</p>
         </div>
       `);
-      // On marker click, update the sidebar with station info, prediction, and recommendations if needed
       marker.on('click', () => {
         updateSidebar(station);
       });
@@ -196,7 +184,6 @@ function updateMarkers() {
   });
 }
 
-// Fetch station data from JCDecaux and initialize markers
 function fetchStations() {
   fetch(`https://api.jcdecaux.com/vls/v1/stations?contract=dublin&apiKey=${apiKey}`)
     .then(response => response.json())
@@ -207,11 +194,9 @@ function fetchStations() {
     .catch(err => console.error('JCDecaux fetch error:', err));
 }
 
-// Initial fetch and refresh every 60 seconds
 fetchStations();
 setInterval(fetchStations, 60000);
 
-// Set up live updating for search and filter inputs
 if (searchInput) {
   searchInput.addEventListener('input', updateMarkers);
 }
@@ -219,9 +204,6 @@ if (bikeFilter) {
   bikeFilter.addEventListener('input', updateMarkers);
 }
 
-// Sidebar close function (called by the sidebar close button)
 function closeSidebar() {
   document.getElementById('station-sidebar').style.right = '-320px';
 }
-fetch(`/recommend_stations?station_id=${stationId}&condition=need_bikes`)
-
